@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f0e6">
+  <meta name="description" content="在日式神社的木製籤筒裡，為今日求一支御神籤。25 張籤詩、五種吉凶、專屬運勢與收藏功能。">
+  <title>一期一籤｜日式神社御神籤</title>
+  <style>
+    :root{
+      --paper:#f8f4eb; --wash:#eee2d1; --ink:#38302a; --sub:#796b5e;
+      --red:#aa4137; --deep-red:#842f29; --gold:#bb8c54; --line:#e5d8c6;
+      --serif:"Noto Serif TC","Songti TC","Yu Mincho","Hiragino Mincho ProN",serif;
+      --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;color:var(--ink);font-family:var(--sans);background:
+      radial-gradient(ellipse at 90% 3%,rgba(199,116,100,.10) 0,transparent 27%),
+      radial-gradient(ellipse at 0% 75%,rgba(187,140,84,.10) 0,transparent 35%),
+      repeating-linear-gradient(90deg,transparent 0px,transparent 4px,rgba(117,84,55,.013) 4px,rgba(117,84,55,.013) 5px),var(--paper);
+      -webkit-font-smoothing:antialiased;
+    }
+    button{font:inherit;cursor:pointer}
+    button:focus-visible,a:focus-visible{outline:3px solid #cf8b62;outline-offset:4px}
+    button:disabled{cursor:not-allowed}
+    .shell{width:min(1230px,calc(100% - 60px));margin:0 auto}
+    .topbar{height:88px;border-bottom:1px solid rgba(153,111,72,.2);display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}
+    .brand-emblem{width:45px;height:45px;border:2px solid var(--red);display:grid;place-items:center;color:var(--red);font:700 22px var(--serif);position:relative;flex:none}
+    .brand-emblem::after{content:"";position:absolute;inset:3px;border:1px solid #ba7165;pointer-events:none}
+    .brand-name{font:600 21px var(--serif);letter-spacing:.22em;white-space:nowrap}
+    .brand-caption{font:10px var(--sans);letter-spacing:.26em;color:var(--sub);margin-top:5px}
+    .nav-actions{display:flex;align-items:center;gap:9px}
+    .nav-btn{appearance:none;border:1px solid var(--line);background:#fffbf5;color:#655447;border-radius:5px;min-height:42px;padding:10px 14px;display:inline-flex;align-items:center;gap:9px;transition:.18s ease}
+    .nav-btn:hover{border-color:#c9a889;background:white;transform:translateY(-1px)}
+    .nav-btn svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+    .fav-count{font-size:11px;min-width:18px;height:18px;border-radius:12px;display:inline-grid;place-items:center;color:white;background:var(--red);padding:0 4px}
+    .fav-count:empty{display:none}
+    .intro{padding:44px 0 27px;text-align:center;position:relative}
+    .eyebrow{color:var(--red);font-size:11px;letter-spacing:.5em;font-weight:650;display:flex;align-items:center;justify-content:center;gap:14px}
+    .eyebrow::before,.eyebrow::after{content:"";height:1px;width:30px;background:#c6a288}
+    h1{font:500 clamp(32px,4.0vw,52px)/1.45 var(--serif);letter-spacing:.17em;margin:12px 0 9px}
+    .intro-sub{font-size:13px;letter-spacing:.11em;color:var(--sub);line-height:1.8;margin:0}
+    .experience{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:27px;align-items:stretch}
+    .stage{position:relative;min-height:558px;overflow:hidden;border:1px solid #dfcbb8;border-radius:3px;background:
+      linear-gradient(0deg,rgba(202,179,143,.17),transparent 22%),
+      radial-gradient(circle at 50% 32%,#fffaf0 0,#f3e6d4 52%,#edddc8 100%);isolation:isolate}
+    .stage::before{content:"";position:absolute;inset:12px;border:1px solid rgba(167,122,79,.27);pointer-events:none;z-index:6}
+    .stage-sun{position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,#f9efe0 0 30%,rgba(213,153,135,.14) 31%,rgba(213,153,135,.12) 61%,transparent 62%);left:50%;top:3%;transform:translateX(-50%)}
+    .stage-mark{position:absolute;top:31px;left:31px;display:grid;gap:7px;color:#9d6d59;z-index:7}
+    .stage-mark strong{font:19px var(--serif);writing-mode:vertical-rl;letter-spacing:.17em}
+    .stage-mark small{font:10px var(--serif);writing-mode:vertical-rl;letter-spacing:.18em}
+    .stage-badge{position:absolute;right:31px;top:30px;width:40px;height:40px;border:2px solid rgba(169,64,57,.7);border-radius:50%;display:grid;place-items:center;font:15px var(--serif);color:var(--red);transform:rotate(-10deg);z-index:8}
+    .torii{position:absolute;top:93px;left:50%;transform:translateX(-50%);width:360px;height:270px;opacity:.85;z-index:0}
+    .torii .beam-top{position:absolute;top:0;left:0;width:100%;height:19px;background:linear-gradient(#a9392f 0 70%,#79322a 71%);border-radius:7px 7px 2px 2px;clip-path:polygon(0 20%,45% 0,55% 0,100% 20%,98% 100%,2% 100%)}
+    .torii .beam-mid{position:absolute;top:49px;left:10%;width:80%;height:11px;background:#b94436}
+    .torii .pillar{position:absolute;top:16px;width:17px;height:247px;background:linear-gradient(90deg,#9b342d,#d2604b 38%,#a93b33);transform:rotate(-3deg);border-bottom:12px solid #50362e}
+    .torii .pillar.left{left:61px;transform:rotate(3deg)}
+    .torii .pillar.right{right:61px}
+    .torii .plaque{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:36px;height:49px;background:#533b2c;border:2px solid #d2ad6d;color:#e6c884;display:grid;place-items:center;font:18px var(--serif);z-index:2}
+    .ground{position:absolute;bottom:107px;left:-10%;width:120%;height:99px;background:radial-gradient(ellipse at center top,rgba(175,125,75,.2),transparent 68%);border-top:1px solid rgba(161,127,90,.15)}
+    .floral{position:absolute;z-index:2;pointer-events:none;font-family:var(--serif);color:#cc8c81;filter:drop-shadow(0 3px 2px rgba(126,70,66,.08));user-select:none}
+    .floral.left{bottom:150px;left:37px;font-size:18px;transform:rotate(27deg)}
+    .floral.right{top:199px;right:28px;font-size:32px;transform:rotate(-23deg)}
+    .floral.low{bottom:132px;left:78px;font-size:14px;color:#e3afa6}
+    .petal{position:absolute;width:10px;height:14px;border-radius:80% 0 80% 0;background:#dca49a;opacity:.65;animation:petalFloat 7s linear infinite;z-index:3;pointer-events:none}
+    .petal.p1{top:-30px;left:16%;animation-delay:-2s}.petal.p2{top:-40px;left:78%;animation-delay:-5s;animation-duration:9s}.petal.p3{top:-10px;left:59%;animation-delay:-3s;animation-duration:10s}
+    @keyframes petalFloat{0%{transform:translate3d(0,-20px,0) rotate(0);opacity:0}12%{opacity:.7}88%{opacity:.5}100%{transform:translate3d(90px,590px,0) rotate(540deg);opacity:0}}
+    .tube-button{appearance:none;background:none;border:0;position:absolute;width:220px;height:310px;left:50%;top:167px;transform:translateX(-50%);z-index:5;padding:0;touch-action:manipulation}
+    .tube-button:hover:not(:disabled) .tube-main{filter:brightness(1.07) drop-shadow(0 18px 10px rgba(88,47,22,.16));transform:translateY(-4px)}
+    .tube-button:active:not(:disabled) .tube-main{transform:translateY(0)}
+    .tube-shadow{position:absolute;bottom:9px;left:16px;width:190px;height:25px;background:#76533e;filter:blur(17px);opacity:.3;border-radius:50%}
+    .tube-main{position:absolute;bottom:19px;left:18px;width:184px;height:246px;transition:transform .2s,filter .2s;transform-origin:50% 86%;filter:drop-shadow(0 13px 8px rgba(88,47,22,.2))}
+    .tube-shape{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,rgba(51,23,9,.09) 2px,transparent 4px,transparent 22px),linear-gradient(90deg,#6d3a22 0%,#a66c40 9%,#d39a62 26%,#b97f4c 55%,#9e6139 82%,#61371f 100%);clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);border-radius:3px 3px 15px 15px}
+    .tube-shape::after{content:"";position:absolute;inset:11px 16px;border-left:1px solid rgba(255,237,182,.18);border-right:1px solid rgba(68,31,12,.22);clip-path:polygon(6% 0,94% 0,100% 100%,0 100%)}
+    .tube-rim{position:absolute;top:-8px;left:24px;width:136px;height:25px;border-radius:50%;background:radial-gradient(ellipse,#382315 0 44%,#906037 45% 60%,#dfab6a 62% 74%,#6b3b22 80%);box-shadow:0 3px 3px #4c2b15a1}
+    .tube-band{position:absolute;left:8px;width:168px;height:17px;background:linear-gradient(90deg,#6b271e,#b74e36 21%,#c66746 54%,#7c2b20);box-shadow:0 2px 2px #41211266}
+    .tube-band.top{top:29px;clip-path:polygon(5% 0,95% 0,100% 100%,0 100%)}
+    .tube-band.bottom{bottom:14px;width:181px;left:1px;border-radius:2px 2px 7px 7px}
+    .tube-calligraphy{position:absolute;inset:57px 34px 25px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#332219;text-shadow:0 1px 0 #e8b98060;font:700 49px/.95 var(--serif);letter-spacing:.05em}
+    .tube-calligraphy small{font:11px var(--serif);letter-spacing:.18em;margin-bottom:9px;color:#62341e}
+    .tube-calligraphy span{display:block}
+    .tube-side-stamp{position:absolute;bottom:47px;right:25px;color:#9a3a2e;font:13px var(--serif);border:1px solid #9a3a2e;padding:3px;transform:rotate(8deg)}
+    .sticks{position:absolute;bottom:250px;left:50%;transform:translateX(-50%);width:116px;height:55px;z-index:-1}
+    .sticks i{position:absolute;display:block;bottom:0;left:50%;width:8px;height:66px;border-radius:3px 3px 0 0;background:linear-gradient(90deg,#aa7646,#f5d09a 42%,#b37b42);transform-origin:bottom center}
+    .sticks i:nth-child(1){transform:translateX(-50%) rotate(-22deg);height:46px}
+    .sticks i:nth-child(2){transform:translateX(-50%) rotate(-10deg);height:61px}
+    .sticks i:nth-child(3){transform:translateX(-50%) rotate(4deg);height:54px}
+    .sticks i:nth-child(4){transform:translateX(-50%) rotate(17deg);height:61px}
+    .sticks i:nth-child(5){transform:translateX(-50%) rotate(28deg);height:45px}
+    .lucky-stick{position:absolute;bottom:235px;left:calc(50% - 8px);width:16px;height:104px;border-radius:6px 6px 2px 2px;background:linear-gradient(90deg,#ac7037,#eac690 48%,#bc864d);transform:translateY(105px) rotate(7deg);opacity:0;box-shadow:2px 4px 5px #5a321933;z-index:4;pointer-events:none}
+    .lucky-stick::after{content:"籤";position:absolute;top:18px;left:3px;font:14px var(--serif);color:#713425}
+    .tube-button.is-shaking .tube-main{animation:shake .65s ease-in-out 2}
+    .tube-button.is-shaking .sticks{animation:stickShake .65s ease-in-out 2}
+    .tube-button.is-reaching .lucky-stick{animation:stickRise .83s cubic-bezier(.19,.84,.27,1) both}
+    @keyframes shake{0%,100%{transform:rotate(0)}15%{transform:rotate(-9deg)}30%{transform:rotate(8deg)}45%{transform:rotate(-6deg)}65%{transform:rotate(6deg)}85%{transform:rotate(-3deg)}}
+    @keyframes stickShake{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(-6px)}}
+    @keyframes stickRise{0%{opacity:1;transform:translateY(105px) rotate(8deg)}53%{opacity:1;transform:translateY(-90px) rotate(-8deg)}86%{opacity:1;transform:translateY(-94px) rotate(-7deg)}100%{opacity:0;transform:translateY(-132px) rotate(-5deg)}}
+    .stage-controls{position:absolute;bottom:31px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;width:min(100% - 52px,320px);z-index:7}
+    .draw-button{width:100%;max-width:245px;height:48px;border:1px solid #8c302a;border-radius:3px;background:var(--red);color:#fffaf0;font-weight:650;letter-spacing:.2em;box-shadow:0 4px 0 #7f332b,0 9px 18px #7a433326;transition:.16s ease}
+    .draw-button:not(:disabled):hover{background:#97372e;transform:translateY(-2px);box-shadow:0 6px 0 #7f332b,0 13px 18px #7a433326}
+    .draw-button:disabled{opacity:.72}
+    .stage-hint{font:12px var(--serif);letter-spacing:.12em;color:#755c4d}
+    .result-panel{position:relative;min-height:558px;border:1px solid #dfcbb8;border-radius:3px;padding:14px;background:#e9ddcd;overflow:hidden}
+    .result-panel::before{content:"";position:absolute;inset:5px;border:1px solid rgba(255,255,255,.35);pointer-events:none}
+    .result-inner{height:100%;min-height:528px;position:relative;background:repeating-linear-gradient(0deg,rgba(155,117,65,.012) 0 3px,transparent 3px 5px),#fffcf5;border:1px solid #e5d9c4;box-shadow:0 4px 10px #87653b12;display:flex;flex-direction:column;padding:24px 24px 20px}
+    .corner{position:absolute;width:15px;height:15px;border-color:#c9ae8c;border-style:solid;pointer-events:none}
+    .corner.tl{top:12px;left:12px;border-width:1px 0 0 1px}.corner.tr{top:12px;right:12px;border-width:1px 1px 0 0}
+    .corner.bl{bottom:12px;left:12px;border-width:0 0 1px 1px}.corner.br{bottom:12px;right:12px;border-width:0 1px 1px 0}
+    .empty-result{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px;color:#947b63}
+    .empty-icon{width:76px;height:96px;position:relative;border:2px solid #d7bca0;background:#fffaf1;box-shadow:7px 7px 0 #e6d6c2;display:grid;place-items:center;color:#b98a63;font:40px var(--serif);writing-mode:vertical-rl}
+    .empty-icon::before{content:"";position:absolute;left:50%;top:-18px;transform:translateX(-50%);height:24px;width:1px;background:#d1ac83}
+    .empty-result h2{font:400 24px var(--serif);letter-spacing:.16em;color:#695343;margin:9px 0 0}
+    .empty-result p{font:13px/2 var(--serif);letter-spacing:.1em;max-width:260px;margin:0}
+    .empty-chips{margin-top:10px;display:flex;align-items:center;gap:7px}
+    .empty-chips span{width:7px;height:7px;border:1px solid #c39586;transform:rotate(45deg)}
+    .loading-result{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:19px;color:#8e6454;text-align:center}
+    .loading-ring{width:66px;height:66px;border:1px solid #e2cbbc;border-top-color:var(--red);border-radius:50%;animation:spin 1s linear infinite;display:grid;place-items:center}
+    .loading-ring span{font:24px var(--serif);color:var(--red);animation:spin 1s linear infinite reverse}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-result p{font:15px var(--serif);letter-spacing:.2em;margin:0}
+    .result-panel[data-view="loading"] .empty-result,.result-panel[data-view="loading"] .fortune{display:none}
+    .result-panel[data-view="loading"] .loading-result{display:flex}
+    .result-panel[data-view="fortune"] .empty-result,.result-panel[data-view="fortune"] .loading-result{display:none}
+    .fortune{display:none;flex:1;min-width:0;flex-direction:column;animation:paperUnfold .75s cubic-bezier(.18,.73,.25,1) both;transform-origin:top center}
+    .result-panel[data-view="fortune"] .fortune{display:flex}
+    @keyframes paperUnfold{from{opacity:.25;transform:scaleY(.4) translateY(-30px)}to{opacity:1;transform:scaleY(1) translateY(0)}}
+    .slip-top{text-align:center;position:relative}
+    .slip-overline{font:10px var(--serif);letter-spacing:.32em;color:#a38063;margin:0 0 5px}
+    .slip-heading{display:flex;justify-content:center;align-items:center;gap:14px;color:#755847}
+    .slip-heading span{width:28px;height:1px;background:#cdb69c}
+    .slip-heading strong{font:14px var(--serif);letter-spacing:.2em}
+    .grade-wrap{display:flex;align-items:center;justify-content:center;gap:19px;margin:8px 0 2px}
+    .grade{font:500 clamp(49px,5vw,70px)/1.2 var(--serif);letter-spacing:.17em;color:var(--red);text-shadow:1px 2px 0 #dfbaa42b}
+    .grade.grade-bad{color:#6f5c57}
+    .grade-flowers{font-size:22px;color:#d9a19a}
+    .red-divider{height:1px;background:linear-gradient(90deg,transparent 0%,#d2a09a 20% 80%,transparent 100%);margin:12px 0 14px;position:relative}
+    .red-divider::after{content:"◆";font-size:9px;color:var(--red);position:absolute;background:#fffcf5;top:-7px;left:50%;padding:0 8px;transform:translateX(-50%)}
+    .overall-label{font:700 11px var(--sans);color:var(--red);letter-spacing:.25em;text-align:center}
+    .overall-text{font:15px/1.95 var(--serif);color:#54473b;text-align:center;margin:8px 0 4px;min-height:53px}
+    .fortune-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .fortune-item{min-width:0;padding:10px 11px;background:#f7f1e7;border:1px solid #ece0d0}
+    .fortune-item .category{font:700 11px var(--sans);color:#a05c47;letter-spacing:.06em;display:flex;align-items:center;gap:6px;margin-bottom:4px}
+    .fortune-item .category i{font-style:normal;font-size:15px}
+    .fortune-item p{font:12px/1.65 var(--serif);margin:0;color:#594d40}
+    .fortune-actions{margin-top:auto;padding-top:15px;display:flex;align-items:center;gap:9px}
+    .collect-button{flex:1;min-height:43px;border:1px solid #b66055;color:var(--red);background:#fffaf3;border-radius:3px;display:flex;justify-content:center;align-items:center;gap:8px;font-size:13px;font-weight:650;letter-spacing:.08em;transition:.2s}
+    .collect-button:hover{background:#fff0e9}.collect-button.is-saved{background:#a9473c;color:white}
+    .again-button{min-height:43px;border:1px solid #d9c6af;background:#f7f0e5;color:#675443;padding:0 13px;border-radius:3px;font-size:13px;white-space:nowrap}
+    .again-button:hover{background:#efe2d0}
+    .slip-footer{display:flex;justify-content:space-between;align-items:center;gap:7px;border-top:1px solid #e9dac7;margin-top:13px;padding-top:11px}
+    .slip-footer span{font:11px var(--serif);letter-spacing:.13em;color:#a28d77}
+    .seal{color:var(--red)!important;border:1px solid var(--red);padding:3px 4px;transform:rotate(-8deg);font:12px var(--serif)!important;white-space:nowrap}
+    .footer-note{padding:29px 0 33px;display:flex;justify-content:space-between;gap:20px;align-items:center;font:12px/1.8 var(--serif);letter-spacing:.09em;color:#877564}
+    .footer-note .foot-red{color:var(--red);letter-spacing:.25em}
+    .overlay{position:fixed;inset:0;z-index:30;background:rgba(30,25,22,.52);display:none;align-items:stretch;justify-content:flex-end;backdrop-filter:blur(3px)}
+    .overlay.is-open{display:flex}
+    .drawer{width:min(490px,100%);height:100%;background:#faf5ec;box-shadow:-16px 0 40px #25190f28;padding:36px 32px;display:flex;flex-direction:column;animation:drawerIn .27s ease both}
+    @keyframes drawerIn{from{transform:translateX(20px);opacity:.6}to{transform:translateX(0);opacity:1}}
+    .drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+    .drawer-label{font:10px var(--sans);letter-spacing:.28em;color:var(--red)}
+    .drawer-head h2{font:500 29px var(--serif);letter-spacing:.12em;margin:8px 0 0}
+    .drawer-close{width:38px;height:38px;border:1px solid var(--line);background:white;font-size:22px;color:#76604f;border-radius:3px}
+    .drawer-info{font-size:12px;color:var(--sub);line-height:1.7;margin:16px 0}
+    .favorite-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:4px 3px 25px 0}
+    .fav-empty{display:flex;flex:1;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:12px;color:#9d8675;font:14px/2 var(--serif)}
+    .fav-empty strong{font:40px var(--serif);color:#bc9b83}
+    .fav-card{background:#fffcf5;border:1px solid #e1d1bd;border-left:4px solid var(--red);padding:16px;display:grid;grid-template-columns:1fr auto;gap:12px}
+    .fav-card.bad{border-left-color:#88736e}
+    .fav-card .fav-grade{font:20px var(--serif);color:var(--red);letter-spacing:.1em}
+    .fav-card.bad .fav-grade{color:#72605a}
+    .fav-card .fav-id{color:#9d8a77;font:11px var(--serif);margin-left:7px}
+    .fav-card p{margin:8px 0 0;color:#69594c;font:12px/1.7 var(--serif)}
+    .fav-controls{display:flex;flex-direction:column;gap:6px;justify-content:center}
+    .fav-controls button{border:1px solid #ddc9b4;background:#fbf4ea;padding:7px 9px;border-radius:3px;font-size:11px;color:#715545;white-space:nowrap}
+    .fav-controls button:hover{border-color:var(--red);color:var(--red)}
+    .drawer-bottom{border-top:1px solid var(--line);padding-top:16px;color:#917e6e;font-size:11px;line-height:1.7}
+    .toast{position:fixed;left:50%;bottom:26px;z-index:50;transform:translate(-50%,18px);background:#4f3a2f;color:#fff9f0;min-width:180px;max-width:calc(100vw - 40px);padding:12px 23px;border-radius:3px;text-align:center;font-size:13px;letter-spacing:.05em;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 7px 25px #26170c35}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .sr-only{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden}
+    @media(max-width:900px){
+      .shell{width:min(700px,calc(100% - 34px))}
+      .topbar{height:76px}.intro{padding:31px 0 23px}
+      .experience{grid-template-columns:1fr;gap:15px}
+      .stage{min-height:515px}.result-panel{min-height:450px}.result-inner{min-height:420px;padding:21px 23px 18px}
+      .tube-button{top:139px}.torii{top:65px}.ground{bottom:100px}.stage-controls{bottom:25px}
+      .fortune-grid{gap:9px}.fortune-item{padding:12px}
+    }
+    @media(max-width:520px){
+      .shell{width:calc(100% - 28px)}
+      .topbar{height:73px}.brand{gap:9px}.brand-emblem{width:38px;height:38px;font-size:20px}.brand-name{font-size:16px;letter-spacing:.1em}.brand-caption{font-size:8px;letter-spacing:.16em}
+      .nav-actions{gap:5px}.nav-btn{min-height:38px;padding:8px 9px;gap:5px;font-size:12px}.nav-btn svg{width:15px;height:15px}.nav-btn .btn-label{display:none}
+      .intro{padding:29px 0 21px}h1{font-size:33px;letter-spacing:.1em;margin:10px 0 8px}.intro-sub{font-size:11px;letter-spacing:.03em}
+      .eyebrow{font-size:10px;letter-spacing:.3em}
+      .stage{min-height:474px}.stage::before{inset:8px}.stage-sun{width:300px;height:300px}.torii{width:290px;top:66px}.torii .pillar.left{left:50px}.torii .pillar.right{right:50px}.tube-button{top:122px;transform:translateX(-50%) scale(.89);transform-origin:top center}.stage-mark{left:21px;top:24px}.stage-mark strong{font-size:16px}.stage-badge{right:20px;top:22px;width:35px;height:35px;font-size:13px}
+      .ground{bottom:92px}.stage-controls{bottom:20px}.draw-button{height:46px}.stage-hint{font-size:11px}.floral.left{left:15px;bottom:115px}.floral.right{right:12px}
+      .result-panel{padding:10px;min-height:450px}.result-inner{padding:20px 16px 16px;min-height:427px}.grade{font-size:58px}.overall-text{font-size:14px;margin-bottom:1px}.fortune-grid{gap:7px}.fortune-item{padding:9px}.fortune-item p{font-size:11px}.fortune-item .category{font-size:10px}.fortune-actions{gap:7px}.collect-button{font-size:12px}.again-button{font-size:12px;padding:0 10px}
+      .footer-note{padding:20px 0 25px;display:block;text-align:center;font-size:10px}.footer-note .foot-red{display:block;margin-bottom:5px}
+      .drawer{padding:24px 20px}.drawer-head h2{font-size:24px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar shell">
+    <div class="brand">
+      <div class="brand-emblem" aria-hidden="true">縁</div>
+      <div><div class="brand-name">一期一籤</div><div class="brand-caption">OMIKUJI · 今日の運勢</div></div>
+    </div>
+    <nav class="nav-actions" aria-label="網站功能">
+      <button id="soundButton" class="nav-btn" type="button" title="切換音效" aria-pressed="true">
+        <svg id="soundIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path class="sound-wave" d="M15 9a5 5 0 0 1 0 6M18 6a9 9 0 0 1 0 12"/></svg>
+        <span id="soundText" class="btn-label">音效開啟</span>
+      </button>
+      <button id="favoritesButton" class="nav-btn" type="button" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        <span class="btn-label">我的收藏</span><span id="favCount" class="fav-count" aria-label="收藏數量"></span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="shell" id="mainContent">
+    <div class="intro">
+      <div class="eyebrow">心誠則靈 · 結一段今日之緣</div>
+      <h1>今日，求一支好籤。</h1>
+      <p class="intro-sub">靜下心來，輕觸籤筒。願你在這小小的儀式裡，遇見今日的指引。</p>
+    </div>
+    <div class="experience">
+      <section class="stage" aria-label="神社籤筒求籤區">
+        <div class="stage-sun" aria-hidden="true"></div>
+        <div class="stage-mark" aria-hidden="true"><strong>和風神社</strong><small>願い事</small></div>
+        <div class="stage-badge" aria-hidden="true">福</div>
+        <div class="torii" aria-hidden="true"><div class="pillar left"></div><div class="pillar right"></div><div class="beam-top"></div><div class="beam-mid"></div><div class="plaque">奉</div></div>
+        <span class="floral left" aria-hidden="true">✿</span><span class="floral right" aria-hidden="true">✿</span><span class="floral low" aria-hidden="true">✿</span>
+        <span class="petal p1" aria-hidden="true"></span><span class="petal p2" aria-hidden="true"></span><span class="petal p3" aria-hidden="true"></span>
+        <div class="ground" aria-hidden="true"></div>
+        <button type="button" id="tubeButton" class="tube-button" aria-label="點擊木製籤筒，開始抽御神籤">
+          <span class="tube-shadow" aria-hidden="true"></span>
+          <span class="sticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="lucky-stick" aria-hidden="true"></span>
+          <span class="tube-main" aria-hidden="true"><span class="tube-shape"></span><span class="tube-rim"></span><span class="tube-band top"></span><span class="tube-band bottom"></span><span class="tube-calligraphy"><small>心 願 成 就</small><span>御</span><span>神</span><span>籤</span></span><span class="tube-side-stamp">福</span></span>
+        </button>
+        <div class="stage-controls">
+          <button id="drawButton" class="draw-button" type="button">誠心求一籤　↗</button>
+          <span class="stage-hint" id="stageHint">或輕觸上方籤筒 · 每日不限次數</span>
+        </div>
+      </section>
+
+      <section class="result-panel" id="resultPanel" data-view="empty" aria-label="御神籤結果">
+        <div class="result-inner">
+          <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+          <div class="empty-result" id="emptyResult">
+            <div class="empty-icon" aria-hidden="true">運</div>
+            <h2>一籤一會</h2>
+            <p>好運也許近在眼前。<br>請先向籤筒誠心許下一個願望，<br>再抽出屬於今日的籤。</p>
+            <div class="empty-chips" aria-hidden="true"><span></span><span></span><span></span></div>
+          </div>
+          <div class="loading-result" role="status" aria-live="polite">
+            <div class="loading-ring" aria-hidden="true"><span>縁</span></div>
+            <p>神明正在回應你的心願…</p>
+          </div>
+          <article class="fortune" id="fortuneCard" aria-live="polite" aria-atomic="true">
+            <div class="slip-top"><p class="slip-overline">一期一籤 · OMIKUJI</p><div class="slip-heading"><span></span><strong id="fortuneNumber">第一番</strong><span></span></div><div class="grade-wrap"><span class="grade-flowers" aria-hidden="true">✿</span><strong id="fortuneGrade" class="grade">大吉</strong><span class="grade-flowers" aria-hidden="true">✿</span></div></div>
+            <div class="red-divider"></div>
+            <div class="overall-label">今 日 總 運</div>
+            <p id="overallText" class="overall-text"></p>
+            <div class="fortune-grid">
+              <div class="fortune-item"><div class="category"><i aria-hidden="true">♡</i>戀愛運</div><p id="loveText"></p></div>
+              <div class="fortune-item"><div class="category"><i aria-hidden="true">✎</i>學業／工作運</div><p id="workText"></p></div>
+              <div class="fortune-item"><div class="category"><i aria-hidden="true">◇</i>財運</div><p id="moneyText"></p></div>
+              <div class="fortune-item"><div class="category"><i aria-hidden="true">❀</i>健康運</div><p id="healthText"></p></div>
+            </div>
+            <div class="fortune-actions"><button id="collectButton" class="collect-button" type="button" aria-pressed="false"><span aria-hidden="true">♡</span><span id="collectLabel">收藏這張籤</span></button><button id="againButton" class="again-button" type="button">再求一籤 ↗</button></div>
+            <div class="slip-footer"><span>願 今日 平安 順遂</span><span class="seal">御神籤</span></div>
+          </article>
+        </div>
+      </section>
+    </div>
+    <footer class="footer-note"><span class="foot-red">一期一會 · 一期一籤</span><span>本網站僅供趣味祈福與娛樂參考。珍惜當下，願萬事順心。</span></footer>
+  </main>
+
+  <div id="favoritesOverlay" class="overlay" aria-hidden="true">
+    <section class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <div class="drawer-head"><div><div class="drawer-label">KEEP YOUR LUCK</div><h2 id="drawerTitle">我的御神籤收藏</h2></div><button type="button" id="closeDrawer" class="drawer-close" aria-label="關閉收藏區">×</button></div>
+      <p class="drawer-info">在這裡收藏喜歡的籤。點選「展開籤紙」可以再看一次完整運勢。</p>
+      <div id="favoriteList" class="favorite-list"></div>
+      <div class="drawer-bottom">♡ 收藏會自動保存在目前瀏覽器。清除網站資料或使用其他裝置時，收藏不會同步。</div>
+    </section>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+  (() => {
+    'use strict';
+    // 25 支固定御神籤：每種吉凶 5 支，所有文字可離線使用。
+    // 抽籤先依吉凶機率決定等級，再於該等級的 5 支籤中等機率抽出一支。
+    const fortunes = [
+      {id:1,grade:'大吉',overall:'春風正好，期待已久的好消息正在靠近。',love:'真誠表達心意，容易獲得溫暖回應。',work:'努力終將被看見，適合主動爭取機會。',money:'收支穩定，可為心願存下一筆小錢。',health:'精神充沛，外出散步能帶來好心情。'},
+      {id:2,grade:'大吉',overall:'今日諸事順遂，勇敢踏出第一步吧。',love:'自然做自己，緣分便會悄悄靠近。',work:'靈感清晰，適合完成重要的計畫。',money:'有機會獲得意外的小小驚喜。',health:'狀態不錯，記得補充水分與休息。'},
+      {id:3,grade:'大吉',overall:'心中的願望漸漸發芽，請相信自己的步伐。',love:'與重要的人相處，能收穫更多理解。',work:'今天學習效率佳，挑戰新事物正合適。',money:'理財判斷較有條理，維持原則就好。',health:'身心輕盈，適合做喜歡的運動。'},
+      {id:4,grade:'大吉',overall:'好運如晨光灑落，新的相遇值得期待。',love:'主動問候，可能開啟愉快的對話。',work:'合作順暢，身邊的人願意伸出援手。',money:'細心規劃，能留住生活中的小確幸。',health:'保持規律作息，活力更能延續。'},
+      {id:5,grade:'大吉',overall:'一路累積的努力，今日有望開花結果。',love:'彼此信任，關係能更向前一步。',work:'適合分享成果，讓好表現被看見。',money:'容易找到划算而實用的選擇。',health:'心情愉快，別忘了給自己放鬆時間。'},
+      {id:6,grade:'吉',overall:'平穩之中藏著好事，慢慢走也能抵達。',love:'小小關心，比華麗言語更有力量。',work:'按部就班，就能順利完成眼前的事。',money:'維持預算，生活會更加安心。',health:'睡眠充足，讓今天更有精神。'},
+      {id:7,grade:'吉',overall:'適合整理思緒的一天，心定則事成。',love:'耐心傾聽，能拉近彼此距離。',work:'釐清優先順序，事情就不再難辦。',money:'節制不必要的花費，存款慢慢增加。',health:'適時伸展，讓久坐的身體喘口氣。'},
+      {id:8,grade:'吉',overall:'偶然的小驚喜，會替日常添上一點光。',love:'輕鬆的邀約，可能帶來美好回憶。',work:'留意細節，能避免不必要的失誤。',money:'小額支出要留意，整體仍算平穩。',health:'適合走到戶外，換個環境透透氣。'},
+      {id:9,grade:'吉',overall:'保持善意和耐心，今天會比想像中順利。',love:'一句鼓勵，能讓對方感到被重視。',work:'穩穩完成分內事，便是最好的進步。',money:'先比較再購買，容易選到合適的東西。',health:'忙碌之餘，記得讓眼睛休息。'},
+      {id:10,grade:'吉',overall:'腳下的路越走越清楚，別急著求快。',love:'坦誠交流，可以解開小小的誤會。',work:'今天適合複習、整理與確認進度。',money:'財運平和，存錢比衝動消費更開心。',health:'保持輕鬆步調，身心自然更自在。'},
+      {id:11,grade:'小吉',overall:'好運正在醞釀，先把身邊的小事做好。',love:'慢慢熟悉彼此，比急著推進更適合。',work:'遇到不懂的地方，勇敢請教就好。',money:'今天適合記帳，認識自己的花費。',health:'讓自己早點休息，明天更有精神。'},
+      {id:12,grade:'小吉',overall:'小小的進展也值得慶祝，別小看自己。',love:'主動微笑，會讓相處更自然。',work:'任務雖多，逐項完成便能看見成果。',money:'有些想買的東西，可以再想一天。',health:'適度活動，讓緊繃的肩膀放鬆。'},
+      {id:13,grade:'小吉',overall:'今天宜穩不宜急，順其自然會有收穫。',love:'保持平常心，好感會慢慢累積。',work:'細心比速度重要，先求穩再求快。',money:'留意零碎支出，慢慢累積財富。',health:'心情煩躁時，深呼吸放慢步調。'},
+      {id:14,grade:'小吉',overall:'雖然不全照計畫走，也會遇到可愛的插曲。',love:'別過度猜測，多一點溝通更輕鬆。',work:'換個方法嘗試，可能有新的發現。',money:'平凡的一天，守住預算就是收穫。',health:'飲食均衡，給自己多一點照顧。'},
+      {id:15,grade:'小吉',overall:'微小的光仍能照亮前方，請保持期待。',love:'簡單的陪伴，也能讓人感到幸福。',work:'先處理最重要的事，壓力會減輕。',money:'避開衝動購物，為未來留下彈性。',health:'有空就出門走走，轉換一下心情。'},
+      {id:16,grade:'凶',overall:'今日稍有波折，放慢步伐便能安然度過。',love:'暫時少些猜疑，耐心溝通更重要。',work:'重要事情多檢查一次，避免忙中出錯。',money:'今天不宜衝動購物，先守住預算。',health:'不要過度勉強，記得安排休息。'},
+      {id:17,grade:'凶',overall:'烏雲只是暫時，凡事留些餘地便好。',love:'情緒上來時，先冷靜再好好說話。',work:'計畫可能有變，預留時間較安心。',money:'看清需求，避免不必要的花費。',health:'維持作息，累了就讓自己停一停。'},
+      {id:18,grade:'凶',overall:'今日宜靜不宜躁，穩住心便能穩住事。',love:'給彼此一些空間，關係會更輕鬆。',work:'別急著求完美，先把基礎做好。',money:'財務決定先多想一晚，別急著下單。',health:'好好吃飯、喝水，照顧基本需求。'},
+      {id:19,grade:'凶',overall:'遇到不順時，不妨換條路看看風景。',love:'先照顧好心情，再向對方表達心意。',work:'進度變慢也沒關係，檢查方向最重要。',money:'避免跟風花錢，選擇真正需要的。',health:'放下過多安排，留點空白給自己。'},
+      {id:20,grade:'凶',overall:'小心應對眼前的事，明日依舊值得期待。',love:'別讓一時誤會影響彼此的信任。',work:'今天適合整理問題，不必硬闖難關。',money:'優先處理必要開銷，其他稍後再說。',health:'多休息片刻，讓身體恢復活力。'},
+      {id:21,grade:'大凶',overall:'風雨或許較急，但懂得停下也是一種智慧。',love:'避免意氣用事，重要的話明天再說。',work:'暫緩冒進，重新確認每個細節。',money:'先不做重大消費決定，保留餘裕。',health:'今天把照顧自己放在第一位。'},
+      {id:22,grade:'大凶',overall:'諸事不宜強求，保有耐心便能走過低潮。',love:'先整理自己的情緒，再好好交流。',work:'遇到阻礙時，尋求幫助不代表失敗。',money:'守住現有資源，暫時避免冒險。',health:'給自己足夠的休息與安靜時間。'},
+      {id:23,grade:'大凶',overall:'今日適合收起急躁，安靜等待轉機。',love:'保持距離與尊重，反而能減少誤解。',work:'不急著做決定，先收集完整資訊。',money:'先守不攻，謹慎處理每筆開銷。',health:'調整過滿的行程，留意身心疲憊。'},
+      {id:24,grade:'大凶',overall:'不順只是旅途的一站，並非最終的結局。',love:'避免翻舊帳，先專注當下的溝通。',work:'出現差錯時，修正比自責更有用。',money:'管好荷包，購物前先停三分鐘。',health:'多給自己一些喘息和補充能量的時間。'},
+      {id:25,grade:'大凶',overall:'把今日當成休整的日子，明天仍有新可能。',love:'對自己與他人都溫柔一些，不必勉強。',work:'先完成必要工作，其餘循序處理。',money:'以保守規劃為主，暫時不求快速回報。',health:'適當減少負擔，維持簡單的規律生活。'}
+    ];
+    const weights = [{grade:'大吉',weight:25},{grade:'吉',weight:35},{grade:'小吉',weight:25},{grade:'凶',weight:10},{grade:'大凶',weight:5}];
+    const keyFav = 'ichigo-omikuji-favorites-v1';
+    const keySound = 'ichigo-omikuji-sound-v1';
+    const byId = new Map(fortunes.map(f => [f.id,f]));
+    const $ = id => document.getElementById(id);
+    const dom = {
+      tube:$('tubeButton'), draw:$('drawButton'), again:$('againButton'), stageHint:$('stageHint'),panel:$('resultPanel'),
+      num:$('fortuneNumber'),grade:$('fortuneGrade'),overall:$('overallText'),love:$('loveText'),work:$('workText'),money:$('moneyText'),health:$('healthText'),
+      collect:$('collectButton'),collectLabel:$('collectLabel'),sound:$('soundButton'),soundIcon:$('soundIcon'),soundText:$('soundText'),
+      favorites:$('favoritesButton'),count:$('favCount'),overlay:$('favoritesOverlay'),close:$('closeDrawer'),list:$('favoriteList'),toast:$('toast')
+    };
+    function readStorage(key){try{return localStorage.getItem(key)}catch(_){return null}}
+    function writeStorage(key,value){try{localStorage.setItem(key,value);return true}catch(_){return false}}
+    function loadFavorites(){try{const data=JSON.parse(readStorage(keyFav)||'[]');return Array.isArray(data)?[...new Set(data.map(Number))].filter(id=>byId.has(id)):[]}catch(_){return []}}
+    let favoriteIds=loadFavorites();
+    let soundOn=readStorage(keySound)!=='false';
+    let active=null;
+    let isDrawing=false;
+    let audioContext=null;
+    let timers=[];
+    let toastTimer=null;
+    let previousFocus=null;
+    const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const chineseNums=['零','一','二','三','四','五','六','七','八','九','十'];
+    function numberName(n){if(n<=10)return '第'+chineseNums[n]+'番';if(n<20)return '第十'+chineseNums[n%10]+'番';return '第二十'+(n%10===0?'':chineseNums[n%10])+'番'}
+    function chooseFortune(){
+      let roll=Math.random()*100;
+      let group='大凶';
+      for(const item of weights){roll-=item.weight;if(roll<0){group=item.grade;break}}
+      const options=fortunes.filter(f=>f.grade===group);
+      return options[Math.floor(Math.random()*options.length)];
+    }
+    function schedule(fn,ms){const id=setTimeout(fn,ms);timers.push(id)}
+    function cancelTimers(){timers.forEach(clearTimeout);timers=[]}
+    function updateSound(){
+      dom.sound.setAttribute('aria-pressed',String(soundOn));
+      dom.soundText.textContent=soundOn?'音效開啟':'音效關閉';
+      dom.sound.title=soundOn?'點擊關閉音效':'點擊開啟音效';
+      dom.soundIcon.querySelectorAll('.sound-wave').forEach(el=>el.style.display=soundOn?'':'none');
+    }
+    function audio(){
+      if(!soundOn)return null;
+      try{
+        const Ctx=window.AudioContext||window.webkitAudioContext;
+        if(!Ctx)return null;
+        if(!audioContext)audioContext=new Ctx();
+        if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
+        return audioContext;
+      }catch(_){return null}
+    }
+    function playWood(){
+      const ctx=audio();if(!ctx)return;
+      [0,.20,.42,.60].forEach((d,i)=>{
+        const t=ctx.currentTime+d;
+        const osc=ctx.createOscillator(),g=ctx.createGain(),filter=ctx.createBiquadFilter();
+        osc.type='triangle';osc.frequency.setValueAtTime(i%2?155:125,t);osc.frequency.exponentialRampToValueAtTime(63,t+.085);
+        filter.type='lowpass';filter.frequency.value=900;
+        g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.065,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+.12);
+        osc.connect(filter);filter.connect(g);g.connect(ctx.destination);osc.start(t);osc.stop(t+.13);
+      });
+    }
+    function playBell(){
+      const ctx=audio();if(!ctx)return;
+      const start=ctx.currentTime;
+      [[784,.038],[1568,.018],[2352,.008]].forEach(([freq,vol])=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=freq;
+        g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(vol,start+.015);g.gain.exponentialRampToValueAtTime(.0001,start+1.1);
+        o.connect(g);g.connect(ctx.destination);o.start(start);o.stop(start+1.12);
+      });
+    }
+    function toast(message){
+      clearTimeout(toastTimer);dom.toast.textContent=message;dom.toast.classList.add('show');
+      toastTimer=setTimeout(()=>dom.toast.classList.remove('show'),2200);
+    }
+    function renderFortune(f){
+      active=f;
+      dom.num.textContent=numberName(f.id);
+      dom.grade.textContent=f.grade;
+      dom.grade.classList.toggle('grade-bad',f.grade.includes('凶'));
+      dom.overall.textContent=f.overall;dom.love.textContent=f.love;dom.work.textContent=f.work;
+      dom.money.textContent=f.money;dom.health.textContent=f.health;
+      updateCollect();
+      dom.panel.dataset.view='fortune';
+    }
+    function setBusy(busy){isDrawing=busy;dom.tube.disabled=busy;dom.draw.disabled=busy;dom.again.disabled=busy;dom.stageHint.textContent=busy?'正在為你抽出今日的籤…':'或輕觸上方籤筒 · 每日不限次數';dom.draw.textContent=busy?'求籤中，請稍候…':'誠心再求一籤　↗'}
+    function drawFortune(){
+      if(isDrawing)return;
+      cancelTimers();
+      const picked=chooseFortune();
+      setBusy(true);dom.panel.dataset.view='loading';
+      dom.tube.classList.remove('is-shaking','is-reaching');
+      // Restart CSS keyframes even when a user draws multiple times.
+      void dom.tube.offsetWidth;
+      dom.tube.classList.add('is-shaking');
+      playWood();
+      const shakeMs=reducedMotion?80:1320;
+      const riseMs=reducedMotion?100:850;
+      schedule(()=>{
+        dom.tube.classList.remove('is-shaking');
+        dom.tube.classList.add('is-reaching');
+      },shakeMs);
+      schedule(()=>{
+        dom.tube.classList.remove('is-reaching');
+        renderFortune(picked);playBell();setBusy(false);
+      },shakeMs+riseMs);
+    }
+    function persistFavorites(){
+      if(!writeStorage(keyFav,JSON.stringify(favoriteIds)))toast('瀏覽器無法儲存收藏，請確認隱私設定');
+      renderFavorites();updateCollect();
+    }
+    function updateCollect(){
+      const saved=active && favoriteIds.includes(active.id);
+      dom.collect.classList.toggle('is-saved',Boolean(saved));
+      dom.collect.setAttribute('aria-pressed',String(Boolean(saved)));
+      dom.collect.querySelector('span').textContent=saved?'♥':'♡';
+      dom.collectLabel.textContent=saved?'已收藏 · 點擊取消':'收藏這張籤';
+    }
+    function toggleFavorite(){
+      if(!active)return;
+      const idx=favoriteIds.indexOf(active.id);
+      if(idx>=0){favoriteIds.splice(idx,1);toast('已取消收藏這張御神籤')}
+      else{favoriteIds.unshift(active.id);toast('已收藏這張御神籤 ♡')}
+      persistFavorites();
+    }
+    function renderFavorites(){
+      dom.count.textContent=favoriteIds.length?String(favoriteIds.length):'';
+      dom.list.replaceChildren();
+      if(!favoriteIds.length){
+        const empty=document.createElement('div');empty.className='fav-empty';
+        empty.innerHTML='<strong aria-hidden="true">♡</strong><span>還沒有收藏的御神籤。<br>去求一支讓你心動的籤吧！</span>';
+        dom.list.append(empty);return;
+      }
+      favoriteIds.forEach(id=>{
+        const f=byId.get(id);if(!f)return;
+        const card=document.createElement('article');card.className='fav-card'+(f.grade.includes('凶')?' bad':'');
+        const info=document.createElement('div');
+        const grade=document.createElement('span');grade.className='fav-grade';grade.textContent=f.grade;
+        const num=document.createElement('span');num.className='fav-id';num.textContent=numberName(f.id);
+        const p=document.createElement('p');p.textContent=f.overall;
+        info.append(grade,num,p);
+        const actions=document.createElement('div');actions.className='fav-controls';
+        const view=document.createElement('button');view.type='button';view.textContent='展開籤紙';view.setAttribute('aria-label','展開'+numberName(f.id)+f.grade);
+        view.addEventListener('click',()=>{cancelTimers();dom.tube.classList.remove('is-shaking','is-reaching');setBusy(false);renderFortune(f);closeFavorites();$('mainContent').scrollIntoView({behavior:reducedMotion?'instant':'smooth',block:'start'});toast('已展開收藏的御神籤')});
+        const remove=document.createElement('button');remove.type='button';remove.textContent='取消收藏';remove.setAttribute('aria-label','取消收藏'+numberName(f.id));
+        remove.addEventListener('click',()=>{favoriteIds=favoriteIds.filter(v=>v!==id);persistFavorites();toast('已取消收藏')});
+        actions.append(view,remove);card.append(info,actions);dom.list.append(card);
+      });
+    }
+    function openFavorites(){
+      previousFocus=document.activeElement;
+      renderFavorites();dom.overlay.classList.add('is-open');dom.overlay.setAttribute('aria-hidden','false');
+      document.body.style.overflow='hidden';dom.close.focus();
+    }
+    function closeFavorites(){
+      dom.overlay.classList.remove('is-open');dom.overlay.setAttribute('aria-hidden','true');
+      document.body.style.overflow='';
+      if(previousFocus?.isConnected)previousFocus.focus();
+    }
+    dom.tube.addEventListener('click',drawFortune);
+    dom.draw.addEventListener('click',drawFortune);
+    dom.again.addEventListener('click',drawFortune);
+    dom.collect.addEventListener('click',toggleFavorite);
+    dom.sound.addEventListener('click',()=>{soundOn=!soundOn;writeStorage(keySound,String(soundOn));updateSound();toast(soundOn?'抽籤音效已開啟':'抽籤音效已關閉')});
+    dom.favorites.addEventListener('click',openFavorites);
+    dom.close.addEventListener('click',closeFavorites);
+    dom.overlay.addEventListener('click',e=>{if(e.target===dom.overlay)closeFavorites()});
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape'&&dom.overlay.classList.contains('is-open'))closeFavorites();
+      if(e.key==='Tab'&&dom.overlay.classList.contains('is-open')){
+        const focusable=[...dom.overlay.querySelectorAll('button:not(:disabled)')];
+        if(!focusable.length)return;
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+        else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+      }
+    });
+    updateSound();renderFavorites();
+  })();
+  </script>
+</body>
+</html>
